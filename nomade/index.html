@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Menu</h2>
+            <ul>
+                <li><a href="#" onclick="showEntradas()">Entradas</a></li>
+                <li><a href="#" onclick="showPlatoPrincipal()">Platos Principales</a></li>
+                <li><a href="#" onclick="showBebidas()">Bebidas</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <h1>Bienvenido a Restaurante Nomade</h1>
+            <p>
+                Bienvenidos a Restaurante Nomade, un lugar donde el ceviche es la estrella. Nos especializamos en ofrecer ceviches frescos y llenos de sabor, preparados con el mejor pescado del día, como la corvina, marinado en jugo de limón, sal, pimienta, cilantro y un toque de ají amarillo, que le da ese sabor fresco, ácido y picante tan característico. En nuestro menú encontrarás una variedad de ceviches, desde el clásico hasta opciones innovadoras, siempre acompañados de lo mejor de los ingredientes peruanos, como camote, choclo y una salsa criolla que complementa perfectamente cada plato. ¡Ven a disfrutar de un pedazo del Perú con nosotros!Descubre los sabores auténticos de nuestra cocina.</p>
+            <div id="menu"></div>
+            <div class="recommendation">
+                <h2>¿No sabes qué elegir?</h2>
+                <button id="recommendButton">Recomendar un plato</button>
+                <div id="recommendationResult"></div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    <!-- Footer -->
+    <div id="contact">
+        <h2>Contáctanos</h2>
+        <p>Ubicación: Jr. Amazonas #592 * Pucallpa-Perú</p>
+        <div class="social-links">
+            <a href="https://web.facebook.com/people/N%C3%B3made-Restaurante/61564308676878/?_rdc=1&_rdr#" class="facebook">Facebook</a>
+            <a href="https://www.instagram.com/restaurantenomade2024/?igsh=eXBub3JsbTU5djB4#" class="instagram">Instagram</a>
+            <a href="https://wa.me/c/51987232442" class="whatsapp">WhatsApp</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+<div id="recommendationResult"></div>
+
+<script>
+async function getRecommendation() {
+    const response = await fetch('recommendation.php', {  // Ruta a tu archivo PHP
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            prompt: "Recomiéndame un plato del menú",  // Prompt que enviarás a la IA
+        }),
+    });
+    const data = await response.json();
+    document.getElementById('recommendationResult').innerHTML = data.choices[0].text;  // Muestra la recomendación en el div
+}
+</script>
+
+<script>
+    document.getElementById('recommendButton').addEventListener('click', async function () {
+        // Muestra un mensaje mientras se carga la recomendación
+        const resultDiv = document.getElementById('recommendationResult');
+        resultDiv.textContent = "Cargando recomendación...";
+    
+        try {
+            const response = await fetch('recommendation.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    prompt: "Recomiéndame un plato del menú basado en los ingredientes más frescos.",
+                }),
+            });
+    
+            const data = await response.json();
+    
+            if (data.choices && data.choices.length > 0) {
+                resultDiv.textContent = data.choices[0].text.trim();
+            } else {
+                resultDiv.textContent = "No se pudo obtener una recomendación en este momento.";
+            }
+        } catch (error) {
+            resultDiv.textContent = "Hubo un error al obtener la recomendación.";
+            console.error("Error:", error);
+        }
+    });
+    </script>
+    
